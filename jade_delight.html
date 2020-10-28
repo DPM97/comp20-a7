@@ -96,7 +96,7 @@
             $("select").on("change", function () {
               let elem = this.name.replace("quan", "");
               document.getElementsByName("cost")[elem].value =
-                this.value * menuItems[elem].cost;
+                round(this.value * menuItems[elem].cost);
               updateTotals();
             });
 
@@ -151,12 +151,16 @@
             document.getElementsByName("cost").forEach((e) => {
               if (e.value != "") total += parseFloat(e.value);
             });
-            total = Math.round(total * 100) / 100
-            let tax = Math.round(0.0625 * total * 100) / 100
+            total = round(total)
+            let tax = round(0.0625 * total)
             $("input[name=subtotal]").val(total);
             $("input[name=tax]").val(tax);
-            $("input[name=total]").val(Math.round((total - tax) * 100) / 100);
+            $("input[name=total]").val(round(total - tax));
           };
+
+          const round = (value) => {
+            return Math.round(value * 100) / 100
+          }
 
           const isChecked = () => {
             return $("input[value=delivery]").attr("checked") == "checked";
