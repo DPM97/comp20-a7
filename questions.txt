@@ -1,0 +1,11 @@
+1. Honestly, I would just clean up the styling / probably would re-do the
+   origional framework to follow that of a typical online menu (pictures, ect).
+   In addition, I would probably add a few css animations and clean up the
+   styling. Another option would to make it into a web-app that actually 
+   handled the orders. 
+
+2. The thing I like the least about Javascript is its loosly-typed syntax.
+   I touched a bit on this in a past assignment about javascript. Some people
+   may like the freedom (I used to be one of them), however, I think 
+   strongly-typed langauges provide me with a better framework to write code 
+   using "good practices".

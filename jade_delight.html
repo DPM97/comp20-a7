@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Jade Delight</title>
+    <style>
+      label.error {
+        color: #000;
+        background-color: transparent;
+				margin-left: 20px;
+      }
+
+			body {
+				background-color: brown;
+				color: white;
+				align-items: center;
+				text-align: center
+			}
+
+			table {
+				margin: 50px auto;
+			}
+
+			
+    </style>
+  </head>
+
+  <body>
+    <script language="javascript">
+      function MenuItem(name, cost) {
+        this.name = name;
+        this.cost = cost;
+      }
+
+      menuItems = new Array(
+        new MenuItem("Chicken Chop Suey", 4.5),
+        new MenuItem("Sweet and Sour Pork", 6.25),
+        new MenuItem("Shrimp Lo Mein", 5.25),
+        new MenuItem("Moo Shi Chicken", 6.5),
+        new MenuItem("Fried Rice", 2.35)
+      );
+
+      function makeSelect(name, minRange, maxRange) {
+        var t = "";
+        t = "<select name='" + name + "' size='1'>";
+        for (j = minRange; j <= maxRange; j++)
+          t += "<option>" + j + "</option>";
+        t += "</select>";
+        return t;
+      }
+    </script>
+
+    <h1>Jade Delight</h1>
+    <form>
+      <p>First Name: <input type="text" name="fname" /></p>
+      <p>Last Name*: <input type="text" name="lname" /></p>
+      <p>Street: <input type="text" name="street" /></p>
+      <p>City: <input type="text" name="city" /></p>
+      <p>Phone*: <input type="text" name="phone" /></p>
+      <p>
+        <input
+          type="radio"
+          name="p_or_d"
+          value="pickup"
+          checked="checked"
+        />Pickup
+        <input type="radio" name="p_or_d" value="delivery" />
+        Delivery
+      </p>
+      <table border="0" cellpadding="3">
+        <tr>
+          <th>Select Item</th>
+          <th>Item Name</th>
+          <th>Cost Each</th>
+          <th>Total Cost</th>
+        </tr>
+        <script language="javascript">
+          var s = "";
+          for (i = 0; i < menuItems.length; i++) {
+            s += "<tr><td>";
+            s += makeSelect("quan" + i, 0, 10);
+            s += "</td><td>" + menuItems[i].name + "</td>";
+            s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+            s += "<td>$<input type='text' name='cost'/></td></tr>";
+          }
+          document.writeln(s);
+
+          /* my code */
+
+          $(document).ready(() => {
+            $("input[name=city]").parent().hide();
+            $("input[name=street]").parent().hide();
+
+            $("select").on("change", function () {
+              let elem = this.name.replace("quan", "");
+              document.getElementsByName("cost")[elem].value =
+                this.value * menuItems[elem].cost;
+              updateTotals();
+            });
+
+            $('input[name="p_or_d"]').on("click", function () {
+              if (this.value == "delivery") {
+                $("input[name=city]").parent().show();
+                $("input[name=street]").parent().show();
+                $("input[value=pickup]").removeAttr("checked");
+                $("input[value=delivery]").attr("checked", "checked");
+              } else {
+                $("input[name=city]").parent().hide();
+                $("input[name=street]").parent().hide();
+                $("input[value=pickup]").attr("checked", "checked");
+                $("input[value=delivery]").removeAttr("checked");
+              }
+            });
+
+            $("form").validate({
+              rules: {
+                phone: {
+                  matches: "(\\d|\\s)+$",
+                  required: true,
+                },
+                lname: {
+                  required: true,
+                },
+                city: {
+                  required: isChecked,
+                },
+                street: {
+                  required: isChecked,
+                },
+              },
+              messages: {
+                phone: "Please enter a valid phone number",
+                lname: "Please enter a last name",
+                city: "Please enter a city when ordering delivery",
+                street: "Please enter a street when ordering delivery",
+              },
+              submitHandler: (f) => {
+                submitForm(f);
+              },
+            });
+          });
+
+          $.validator.methods.matches = function (value, element) {
+            return /^(\+91-|\+91|0)?\d{10}$/.test(value);
+          };
+
+          const updateTotals = () => {
+            let total = 0;
+            document.getElementsByName("cost").forEach((e) => {
+              if (e.value != "") total += parseFloat(e.value);
+            });
+            $("input[name=subtotal]").val(total);
+            $("input[name=tax]").val(0.0625 * total);
+            $("input[name=total]").val(total - 0.0625 * total);
+          };
+
+          const isChecked = () => {
+            return $("input[value=delivery]").attr("checked") == "checked";
+          };
+
+          const submitForm = (f) => {
+						let t = new Date()
+						isChecked() ? t.setMinutes(t.getMinutes() + 30) : t.setMinutes(t.getMinutes() + 15)
+						let successWin = window.open('', 'Order Summary', 'width=700,height=400')
+
+						successWin.document.title = 'Order Summary'
+						successWin.document.body.setAttribute('style', 
+						'background-color: brown; color: white; text-align: center'
+						)
+
+						successWin.document.body.innerHTML = `
+							<h1>Thank you for your order!</h1>
+							<h2>This order is scheduled to be fulfilled at ${t.getHours() + ':' + t.getMinutes()}</h2>
+							<br/>
+							<h2>Order Summary</h2>
+						`
+
+						$('select').each(function (e) {
+							const val = $(this).val()
+							if (val > 0) {
+								let menuItem = menuItems[e]
+								successWin.document.body.innerHTML += `
+									<h3>${menuItem.name} - (Quantity: ${val}) (Price: $${val * menuItem.cost})</h3>
+								`
+							}
+						})
+
+						successWin.document.body.innerHTML += `
+							<br/>
+							Subtotal: $${$("input[name=subtotal]").val()}
+							<br/>
+							Tax: $${$("input[name=tax]").val()}
+							<br/>
+							Total: $${$("input[name=total]").val()}
+						`
+						document.body.innerHTML = '<h1>Thank you for submitting your order!</h1>'
+
+          };
+        </script>
+      </table>
+      <p>Subtotal: $<input type="text" name="subtotal" id="subtotal" /></p>
+      <p>Mass tax 6.25%: $ <input type="text" name="tax" id="tax" /></p>
+      <p>Total: $ <input type="text" name="total" id="total" /></p>
+
+      <input type="submit" value="Submit Order" />
+    </form>
+  </body>
+</html>
