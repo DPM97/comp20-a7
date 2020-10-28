@@ -151,9 +151,11 @@
             document.getElementsByName("cost").forEach((e) => {
               if (e.value != "") total += parseFloat(e.value);
             });
+            total = Math.round(total * 100) / 100
+            let tax = Math.round(0.0625 * total * 100) / 100
             $("input[name=subtotal]").val(total);
-            $("input[name=tax]").val(0.0625 * total);
-            $("input[name=total]").val(total - 0.0625 * total);
+            $("input[name=tax]").val(tax);
+            $("input[name=total]").val(Math.round((total - tax) * 100) / 100);
           };
 
           const isChecked = () => {
